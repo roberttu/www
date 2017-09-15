@@ -5,8 +5,9 @@
   */
  
 
+var fileindex=0;
 function fileSelected() {
-  var file = document.getElementById('fileToUpload').files[0];
+  var file = document.getElementById('fileToUpload').files[fileindex];
   if (file) {
     var fileSize = 0;
     if (file.size > 1024 * 1024)
@@ -20,16 +21,15 @@ function fileSelected() {
   }
 }
 function uploadFile() {
-  var fd = new FormData();
   filesarr=document.getElementById('fileToUpload').files
 
 /*  for (var i = 0; i < filesarr.length; i++) {
-     fd.append("fileToUpload[]",filesarr[i]);
+    fd.append("fileToUpload", document.getElementById('fileToUpload').files[i]);
   }*/
   for (var i = 0; i < filesarr.length; i++) {
-    fd.append("fileToUpload", document.getElementById('fileToUpload').files[i]);
-  }
-/*  fd.append("fileToUpload", document.getElementById('fileToUpload').files[0]);*/
+  var fd = new FormData();
+  fileindex=i;
+  fd.append("fileToUpload", document.getElementById('fileToUpload').files[fileindex]);
   var xhr = new XMLHttpRequest();
 
   /* event listners */
@@ -40,6 +40,8 @@ function uploadFile() {
   /* Be sure to change the url below to the url of your upload server side script */
   xhr.open("POST", "../cgi-bin/Upload2.py"); 
   xhr.send(fd);
+  fileSelected();
+  }
 }
 
 function uploadProgress(evt) {
@@ -54,7 +56,7 @@ function uploadProgress(evt) {
 
 function uploadComplete(evt) {
   /* This event is raised when the server send back a response */
-  alert(evt.target.responseText);
+/*  alert(evt.target.responseText); */
 }
 
 function uploadFailed(evt) {
@@ -64,3 +66,20 @@ function uploadFailed(evt) {
 function uploadCanceled(evt) {
   alert("The upload has been canceled by the user or the browser dropped the connection.");
 }  
+
+function signin() {
+  var fd = new FormData();
+  fd.append("inputEmail", document.getElementById('inputEmail').value);
+  fd.append("inputPassword", document.getElementById('inputPassword').value);
+  var xhr = new XMLHttpRequest();
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState===4) {
+/*         alert("on ready"+xhr.response);*/
+         document.getElementById('errormessage').innerHTML=xhr.response;
+    }
+  }
+  xhr.open("POST", "../cgi-bin/signin.py"); 
+  xhr.send(fd);
+}
+   
